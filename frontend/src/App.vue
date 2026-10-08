@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { RouterView } from 'vue-router';
+import { RouterView, useRoute } from 'vue-router';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { computed } from 'vue';
+const route = useRoute();
+const showLayout = computed(() => !route.meta.hideLayout);
 </script>
 
 <template>
-  <AppLayout>
+  <AppLayout v-if="showLayout">
     <RouterView />
   </AppLayout>
+  <RouterView v-else />
 </template>
 
 <style>

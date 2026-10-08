@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import { RouterLink, useRoute } from 'vue-router';
 import { useDashboardStore } from '@/stores/useDashboardStore';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 const route = useRoute();
 const dashboardStore = useDashboardStore();
+const authStore = useAuthStore();
+
+const handleAuth = () => {
+  if (authStore.isLoggedIn) {
+    authStore.logout();
+  } else {
+    authStore.login();
+  }
+};
 
 const navigation = [
   { name: 'Dashboard', to: '/dashboard' },
@@ -42,6 +52,21 @@ const navigation = [
             {{ item.name }}
           </RouterLink>
         </nav>
+        <!-- Login / Logout -->
+        <div class="mt-auto p-4 border-t border-gray-200">
+          <button
+            type="button"
+            @click="handleAuth"
+            :class="[
+              authStore.isLoggedIn
+                ? 'text-red-600 border border-red-200 hover:bg-red-50'
+                : 'bg-blue-600 text-white hover:bg-blue-700',
+              'w-full px-4 py-2.5 rounded-lg text-sm font-medium transition-colors'
+            ]"
+          >
+            {{ authStore.isLoggedIn ? 'Ausloggen' : 'Einloggen' }}
+          </button>
+        </div>
       </aside>
 
       <!-- Main Content Container -->
