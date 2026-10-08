@@ -18,7 +18,7 @@ const loading = ref(false);
 const justRegistered = computed(() => route.query.registered === '1');
 
 function useDemoAccount() {
-  username.value = 'demo@paketmanager.de';
+  username.value = 'demo';
   password.value = 'Demo1234!';
   error.value = '';
 }
