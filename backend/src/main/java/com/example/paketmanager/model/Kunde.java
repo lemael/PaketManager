@@ -26,7 +26,7 @@ public class Kunde {
 
     private String city;
 
-    private String contract; // ex: VIP Express, Standard Pro
+    private String contact; // ex: +49 30 123456
 
     private String monthlyVolume;
 

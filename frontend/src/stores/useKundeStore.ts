@@ -7,7 +7,7 @@ import type { Kunde } from '@/services/kunde.service';
 export interface KundeStats {
   activeKunden: number;
   monthlyDeliveries: number;
-  vipCustomers: number;
+  kundenMitSendungen: number;
 }
 
 export const useKundeStore = defineStore('kunden', () => {
@@ -17,7 +17,7 @@ export const useKundeStore = defineStore('kunden', () => {
   const stats = ref<KundeStats>({
     activeKunden: 0,
     monthlyDeliveries: 0,
-    vipCustomers: 0,
+    kundenMitSendungen: 0,
   });
 
   const calculateStats = () => {
@@ -26,12 +26,12 @@ export const useKundeStore = defineStore('kunden', () => {
       const volume = parseInt(kunde.monthlyVolume.split(' ')[0] ?? '0',10);
       return sum + (isNaN(volume) ? 0 : volume);
     }, 0);
-    const vipCustomers = kunden.value.filter(kunde => kunde.contract === 'VIP Express').length;
+    const kundenMitSendungen = kunden.value.filter(kunde => (kunde.totalColisCount ?? 0) > 0).length;
 
     stats.value = {
       activeKunden,
       monthlyDeliveries,
-      vipCustomers,
+      kundenMitSendungen,
     };
   };
   const fetchKunden = async () => {

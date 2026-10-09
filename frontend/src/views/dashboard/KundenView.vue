@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import KundenBadge from '@/components/kunden/KundenBadge.vue';
 import NeuerKunde from '@/components/kunden/NeuerKunde.vue';
 import { useKundeStore } from '@/stores/useKundeStore';
-import type { ContractType } from '@/services/kunde.service';
 
 const kundeStore = useKundeStore();
 
@@ -24,11 +22,11 @@ async function submitForm(payload: {
   name: string;
   mainContact: string;
   city: string;
-  contract: ContractType;
+  contact: string;
   monthlyVolume: string;
 }) {
   formError.value = '';
-  if (!payload.name.trim() || !payload.mainContact.trim() || !payload.city.trim()) {
+  if (!payload.name.trim() || !payload.mainContact.trim() || !payload.city.trim() || !payload.contact.trim()) {
     formError.value = 'Bitte alle Pflichtfelder ausfüllen.';
     return;
   }
@@ -91,10 +89,10 @@ onMounted(() => {
         <!-- Metric 3 -->
         <div class="p-5 md:px-6 md:py-5">
           <div class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
-            Key-Account-Kunden (VIP)
+            Kunden mit Sendungen
           </div>
           <div class="text-2xl font-semibold text-gray-900">
-            {{ kundeStore.stats.vipCustomers }}
+            {{ kundeStore.stats.kundenMitSendungen }}
           </div>
         </div>
       </div>
@@ -111,7 +109,7 @@ onMounted(() => {
       <div class="overflow-x-auto">
         <div class="min-w-[600px]">
           <!-- Table Header Grid -->
-          <div class="grid grid-cols-[2fr_1.5fr_1.5fr_1.5fr_1.5fr_1fr] px-6 py-3 bg-gray-50 border-b border-gray-200">
+          <div class="grid grid-cols-[2fr_1.5fr_1.5fr_1.5fr_1fr] px-6 py-3 bg-gray-50 border-b border-gray-200">
             <div class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
               Name / Unternehmen
             </div>
@@ -119,16 +117,13 @@ onMounted(() => {
               Hauptkontakt
             </div>
             <div class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
+              Kontakt
+            </div>
+            <div class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
               Stadt
             </div>
             <div class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
-              Vertrag
-            </div>
-            <div class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
               Volumen
-            </div>
-            <div class="text-[11px] font-semibold text-gray-500 uppercase tracking-wider">
-              Aktionen
             </div>
           </div>
 
@@ -136,7 +131,7 @@ onMounted(() => {
           <div
             v-for="(kunde, index) in kundeStore.kunden"
             :key="kunde.id"
-            class="grid grid-cols-[2fr_1.5fr_1.5fr_1.5fr_1.5fr_1fr] px-6 py-4 items-center hover:bg-gray-50/50 transition-colors"
+            class="grid grid-cols-[2fr_1.5fr_1.5fr_1.5fr_1fr] px-6 py-4 items-center hover:bg-gray-50/50 transition-colors"
             :class="{ 'border-b border-gray-200': index !== kundeStore.kunden.length - 1 }"
           >
             <div class="text-sm font-medium text-gray-900">
@@ -146,21 +141,13 @@ onMounted(() => {
               {{ kunde.mainContact }}
             </div>
             <div class="text-sm font-normal text-gray-700">
-              {{ kunde.city }}
+              {{ kunde.contact }}
             </div>
-            <div>
-              <KundenBadge :contract="kunde.contract" />
+            <div class="text-sm font-normal text-gray-700">
+              {{ kunde.city }}
             </div>
             <div class="text-sm font-normal text-gray-700">
               {{ kunde.monthlyVolume }}
-            </div>
-            <div class="flex items-center gap-2">
-              <button class="p-1 text-gray-400 hover:text-brand-500 transition-colors" title="Détails">
-                <i class="ti ti-eye text-lg"></i>
-              </button>
-              <button class="p-1 text-gray-400 hover:text-amber-500 transition-colors" title="Éditer">
-                <i class="ti ti-edit text-lg"></i>
-              </button>
             </div>
           </div>
         </div>

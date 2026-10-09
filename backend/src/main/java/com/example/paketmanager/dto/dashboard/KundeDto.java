@@ -15,7 +15,7 @@ public class KundeDto {
     private String name;
     private String mainContact;
     private String city;
-    private String contract;
+    private String contact; // Numéro de téléphone
     private String monthlyVolume;
     private int totalColisCount; // Utile pour afficher le total dans l'UI sans charger toute la liste
 }

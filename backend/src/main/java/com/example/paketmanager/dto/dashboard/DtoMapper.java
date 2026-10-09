@@ -15,7 +15,7 @@ public class DtoMapper {
                 .name(kunde.getName())
                 .mainContact(kunde.getMainContact())
                 .city(kunde.getCity())
-                .contract(kunde.getContract())
+                .contact(kunde.getContact())
                 .monthlyVolume(kunde.getMonthlyVolume())
                 .totalColisCount(kunde.getColis() != null ? kunde.getColis().size() : 0)
                 .build();
@@ -79,7 +79,7 @@ public class DtoMapper {
                 .name(dto.getName())
                 .mainContact(dto.getMainContact())
                 .city(dto.getCity())
-                .contract(dto.getContract())
+                .contact(dto.getContact())
                 .monthlyVolume(dto.getMonthlyVolume())
                 .build();
     }

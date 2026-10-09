@@ -58,7 +58,7 @@ public class DataInitializer {
                     .name("TechShop Berlin")
                     .mainContact("Laura König")
                     .city("Berlin")
-                    .contract("VIP Express")
+                    .contact("+49 30 1234567")
                     .monthlyVolume("120 Sendungen")
                     .build());
 
@@ -66,7 +66,7 @@ public class DataInitializer {
                     .name("Blumen Schmidt")
                     .mainContact("Peter Schmidt")
                     .city("München")
-                    .contract("Standard Pro")
+                    .contact("+49 89 7654321")
                     .monthlyVolume("85 Sendungen")
                     .build());
 
@@ -74,7 +74,7 @@ public class DataInitializer {
                     .name("Buchhandlung Weber")
                     .mainContact("Julia Weber")
                     .city("Hamburg")
-                    .contract("Basic")
+                    .contact("+49 40 9876543")
                     .monthlyVolume("30 Sendungen")
                     .build());
 

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import type { ContractType } from '@/services/kunde.service';
 
 const props = defineProps<{
   open: boolean;
@@ -14,7 +13,7 @@ const emit = defineEmits<{
     name: string;
     mainContact: string;
     city: string;
-    contract: ContractType;
+    contact: string;
     monthlyVolume: string;
   }];
 }>();
@@ -23,12 +22,12 @@ const form = ref({
   name: '',
   mainContact: '',
   city: '',
-  contract: 'Standard Pro' as ContractType,
+  contact: '',
   monthlyVolume: '',
 });
 
 function resetForm() {
-  form.value = { name: '', mainContact: '', city: '', contract: 'Standard Pro', monthlyVolume: '' };
+  form.value = { name: '', mainContact: '', city: '', contact: '', monthlyVolume: '' };
 }
 
 watch(() => props.open, (isOpen) => {
@@ -103,16 +102,15 @@ function submitForm() {
           </div>
 
           <div class="flex flex-col gap-1.5">
-            <label for="kunde-contract" class="text-sm font-medium text-gray-700">Vertrag</label>
-            <select
-              id="kunde-contract"
-              v-model="form.contract"
+            <label for="kunde-phone" class="text-sm font-medium text-gray-700">Kontakt (Telefon) *</label>
+            <input
+              id="kunde-phone"
+              v-model="form.contact"
+              type="tel"
+              required
+              placeholder="z. B. +49 30 1234567"
               class="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm text-gray-900 focus:border-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            >
-              <option value="Basic">Basic</option>
-              <option value="Standard Pro">Standard Pro</option>
-              <option value="VIP Express">VIP Express</option>
-            </select>
+            />
           </div>
 
           <div class="flex flex-col gap-1.5">

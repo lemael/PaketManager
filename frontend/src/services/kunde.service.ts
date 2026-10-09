@@ -1,13 +1,13 @@
 import apiClient from '@/api/axios.instance';
 
-export type ContractType = 'VIP Express' | 'Standard Pro' | 'Basic';
 export interface Kunde {
   id: string;
   name: string;
   mainContact: string;
   city: string;
-  contract: ContractType;
+  contact: string;
   monthlyVolume: string;
+  totalColisCount?: number;
 }
 export const kundeService = {
   async getAll(): Promise<Kunde[]> {
