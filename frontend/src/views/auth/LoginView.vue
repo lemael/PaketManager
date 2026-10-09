@@ -53,6 +53,7 @@ async function handleLogin() {
 
     const data = await response.json();
     authStore.setToken(data.token);
+    authStore.setUsername(username.value.trim());
     await router.push('/dashboard');
   } catch {
     error.value = 'Der Server ist nicht erreichbar. Bitte Verbindung prüfen.';

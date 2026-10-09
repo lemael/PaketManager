@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { transportService } from '@/services/transport.service';
 import type { Transport } from '@/services/transport.service';
+import { useAuthStore } from '@/stores/useAuthStore';
 
 
 
@@ -17,7 +18,11 @@ export const useDashboardStore = defineStore('dashboard', () => {
   const loading = ref<boolean>(false);
   const error = ref<string | null>(null);
   const transports = ref<Transport[]>([]);
-  const user = ref({ name: 'Mael Fosso', role: 'Demo' });
+  const authStore = useAuthStore();
+  const user = computed(() => ({
+    name: authStore.username ?? 'Utilisateur',
+    role: 'Demo',
+  }));
 
   const stats = ref<DashboardStats>({
     total: 0,

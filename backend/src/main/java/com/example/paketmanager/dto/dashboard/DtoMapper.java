@@ -35,6 +35,64 @@ public class DtoMapper {
                 .build();
     }
 
+    public Auto toAuto(AutoDto dto) {
+        if (dto == null) return null;
+        return Auto.builder()
+                .id(dto.getId())
+                .name(dto.getName())
+                .plateNumber(dto.getPlateNumber())
+                .model(dto.getModel())
+                .maxCapacity(dto.getMaxCapacity())
+                .mileage(dto.getMileage())
+                .tuvInspection(dto.getTuvInspection())
+                .status(dto.getStatus() != null ? Auto.AutoStatus.valueOf(dto.getStatus()) : null)
+                .build();
+    }
+
+    public Fahrer toFahrer(FahrerDto dto) {
+        if (dto == null) return null;
+        return Fahrer.builder()
+                .id(dto.getId())
+                .name(dto.getName())
+                .licenseClass(dto.getLicenseClass())
+                .phoneNumber(dto.getPhoneNumber())
+                .status(dto.getStatus() != null ? Fahrer.FahrerStatus.valueOf(dto.getStatus()) : null)
+                .build();
+    }
+
+    public Transport toTransport(TransportDto dto) {
+        if (dto == null) return null;
+        return Transport.builder()
+                .id(dto.getId())
+                .transportNumber(dto.getTransportNumber())
+                .zone(dto.getZone())
+                .colisCount(dto.getColisCount())
+                .deliveredCount(dto.getDeliveredCount())
+                .status(dto.getStatus() != null ? Transport.TransportStatus.valueOf(dto.getStatus()) : null)
+                .build();
+    }
+
+    public Kunde toKunde(KundeDto dto) {
+        if (dto == null) return null;
+        return Kunde.builder()
+                .id(dto.getId())
+                .name(dto.getName())
+                .mainContact(dto.getMainContact())
+                .city(dto.getCity())
+                .contract(dto.getContract())
+                .monthlyVolume(dto.getMonthlyVolume())
+                .build();
+    }
+
+    public Coli toColi(ColiDto dto) {
+        if (dto == null) return null;
+        return Coli.builder()
+                .id(dto.getId())
+                .coliNumber(dto.getColiNumber())
+                .status(dto.getStatus() != null ? Coli.ColiStatus.valueOf(dto.getStatus()) : null)
+                .build();
+    }
+
     public FahrerDto toFahrerDto(Fahrer fahrer) {
         if (fahrer == null) return null;
         return FahrerDto.builder()
@@ -70,8 +128,12 @@ public class DtoMapper {
         return ColiDto.builder()
                 .id(coli.getId())
                 .coliNumber(coli.getColiNumber())
+                .recipient(coli.getRecipient())
+                .formatAndWeight(coli.getFormatAndWeight())
                 .status(coli.getStatus() != null ? coli.getStatus().name() : null)
+                .kundeId(coli.getKunde() != null ? coli.getKunde().getId() : null)
                 .kundeName(coli.getKunde() != null ? coli.getKunde().getName() : null)
+                .transportId(coli.getTransport() != null ? coli.getTransport().getId() : null)
                 .transportZone(coli.getTransport() != null ? coli.getTransport().getZone() : null)
                 .build();
     }

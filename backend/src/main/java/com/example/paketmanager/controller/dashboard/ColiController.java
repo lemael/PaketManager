@@ -1,6 +1,7 @@
 package com.example.paketmanager.controller.dashboard;
 
 import com.example.paketmanager.dto.dashboard.ColiDto;
+import com.example.paketmanager.dto.dashboard.DtoMapper;
 import com.example.paketmanager.model.Coli;
 import com.example.paketmanager.service.dashboard.ColiService;
 
@@ -15,9 +16,11 @@ import java.util.List;
 public class ColiController {
 
     private final ColiService coliService;
+    private final DtoMapper dtoMapper;
 
-    public ColiController(ColiService coliService) {
+    public ColiController(ColiService coliService, DtoMapper dtoMapper) {
         this.coliService = coliService;
+        this.dtoMapper = dtoMapper;
     }
 
     @GetMapping
@@ -33,16 +36,16 @@ public class ColiController {
     }
 
     @PostMapping
-    public ResponseEntity<ColiDto> createColi(@RequestBody Coli coli) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(coliService.saveColi(coli));
+    public ResponseEntity<ColiDto> createColi(@RequestBody ColiDto coliDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(coliService.createColiFromDto(coliDto));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ColiDto> updateColi(@PathVariable Long id, @RequestBody Coli coli) {
+    public ResponseEntity<ColiDto> updateColi(@PathVariable Long id, @RequestBody ColiDto coliDto) {
         return coliService.getColiById(id)
                 .map(existing -> {
-                    coli.setColiId(id);
-                    return ResponseEntity.ok(coliService.saveColi(coli));
+                    coliDto.setId(id);
+                    return ResponseEntity.ok(coliService.saveColi(dtoMapper.toColi(coliDto)));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }

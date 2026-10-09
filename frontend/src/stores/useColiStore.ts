@@ -47,11 +47,29 @@ export const useColiStore = defineStore('colis', () => {
     }
   };
 
+  const createColi = async (coli: Coli) => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const created = await coliService.create(coli);
+      colis.value = [...(colis.value ?? []), created];
+      calculateMetrics(colis.value);
+      return created;
+    } catch (err: any) {
+      error.value = err.message || 'Fehler beim Erstellen des Pakets.';
+      console.error('Error creating coli:', err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   return {
     metrics,
     colis,
     loading,
     error,
     fetchColis,
+    createColi,
   };
 });

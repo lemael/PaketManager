@@ -1,17 +1,19 @@
 <script setup lang="ts">
-import { RouterLink, useRoute } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 import { useDashboardStore } from '@/stores/useDashboardStore';
 import { useAuthStore } from '@/stores/useAuthStore';
 
 const route = useRoute();
+const router = useRouter();
 const dashboardStore = useDashboardStore();
 const authStore = useAuthStore();
 
-const handleAuth = () => {
+const handleAuth = async () => {
   if (authStore.isLoggedIn) {
     authStore.logout();
+    await router.push('/login');
   } else {
-    authStore.login();
+    await router.push('/login');
   }
 };
 

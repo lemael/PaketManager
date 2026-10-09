@@ -50,12 +50,30 @@ export const useKundeStore = defineStore('kunden', () => {
     }
   };
 
+  const createKunde = async (kunde: Omit<Kunde, 'id'>) => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const created = await kundeService.create(kunde);
+      kunden.value.push(created);
+      calculateStats();
+      return created;
+    } catch (err: any) {
+      error.value = err.message || 'Fehler beim Erstellen des Kunden.';
+      console.error('Error creating kunde:', err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   return {
     stats,
     kunden,
     loading,
     error,
     fetchKunden,
+    createKunde,
     calculateStats,
   };
 });

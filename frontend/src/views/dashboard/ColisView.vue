@@ -1,22 +1,71 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import ColiStatusBadge from '@/components/colis/ColisStatusBadge.vue';
+import NeuesColi from '@/components/colis/NeuesColi.vue';
 import { useColiStore } from '@/stores/useColiStore';
+import { useKundeStore } from '@/stores/useKundeStore';
+import type { Coli } from '@/services/coli.service';
 
 const coliStore = useColiStore();
+const kundeStore = useKundeStore();
+
+const showModal = ref(false);
+const submitting = ref(false);
+const formError = ref('');
+
+function openModal() {
+  formError.value = '';
+  showModal.value = true;
+}
+
+function closeModal() {
+  showModal.value = false;
+}
+
+async function submitForm(payload: {
+  kundeId: number;
+  recipient: string;
+  formatAndWeight: string;
+  status: Coli['status'];
+  transportId?: number;
+}) {
+  formError.value = '';
+  if (!payload.kundeId || !payload.recipient.trim() || !payload.formatAndWeight.trim()) {
+    formError.value = 'Bitte alle Pflichtfelder ausfüllen.';
+    return;
+  }
+
+  submitting.value = true;
+  try {
+    await coliStore.createColi(payload);
+    closeModal();
+  } catch {
+    formError.value = 'Paket konnte nicht erstellt werden. Bitte später erneut versuchen.';
+  } finally {
+    submitting.value = false;
+  }
+}
 
 onMounted(() => {
   coliStore.fetchColis();
+  kundeStore.fetchKunden();
 });
 </script>
 
 <template>
   
     <!-- Page Header -->
-    <div class="mb-8">
+    <div class="mb-8 flex items-center justify-between">
       <h1 class="text-gray-900 text-2xl md:text-[28px] font-bold leading-9 tracking-tight">
         Paketverwaltung
       </h1>
+      <button
+        class="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+        @click="openModal"
+      >
+        <span class="text-base leading-none">+</span>
+        Neues Paket
+      </button>
     </div>
 
     <!-- Summary Metrics Card -->
@@ -89,10 +138,10 @@ onMounted(() => {
             :class="{ 'border-b border-gray-200': index !== coliStore.colis!.length - 1 }"
           >
             <div class="px-6 py-4.5 text-sm font-normal text-gray-700">
-              {{ coli.id }}
+              {{ coli.coliNumber || coli.id }}
             </div>
             <div class="px-6 py-4.5 text-sm font-normal text-gray-700">
-              {{ coli.sender }}
+              {{ coli.kundeName }}
             </div>
             <div class="px-6 py-4.5 text-sm font-normal text-gray-700">
               {{ coli.recipient }}
@@ -104,11 +153,20 @@ onMounted(() => {
               <ColiStatusBadge :status="coli.status" />
             </div>
             <div class="px-6 py-4.5 text-sm font-normal text-gray-700">
-              {{ coli.transportId }}
+              {{ coli.transportZone || '—' }}
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <NeuesColi
+      :open="showModal"
+      :submitting="submitting"
+      :error="formError"
+      :kunden="kundeStore.kunden"
+      @close="closeModal"
+      @submit="submitForm"
+    />
  
 </template>

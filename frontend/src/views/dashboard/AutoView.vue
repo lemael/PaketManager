@@ -1,9 +1,49 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import AutoStatusBadge from '@/components/autos/AutoStatusBadge.vue';
+import NeuesAuto from '@/components/autos/NeuesAuto.vue';
 import { useAutoStore } from '@/stores/useAutoStore';
+import type { AutoStatus } from '@/services/auto.service';
 
 const autoStore = useAutoStore();
+
+const showModal = ref(false);
+const submitting = ref(false);
+const formError = ref('');
+
+function openModal() {
+  formError.value = '';
+  showModal.value = true;
+}
+
+function closeModal() {
+  showModal.value = false;
+}
+
+async function submitForm(payload: {
+  plateNumber: string;
+  model: string;
+  maxCapacity: string;
+  mileage: string;
+  tuvInspection: string;
+  status: AutoStatus;
+}) {
+  formError.value = '';
+  if (!payload.plateNumber.trim() || !payload.model.trim()) {
+    formError.value = 'Bitte Zulassung und Modell ausfüllen.';
+    return;
+  }
+
+  submitting.value = true;
+  try {
+    await autoStore.createAuto(payload);
+    closeModal();
+  } catch {
+    formError.value = 'Fahrzeug konnte nicht erstellt werden. Bitte später erneut versuchen.';
+  } finally {
+    submitting.value = false;
+  }
+}
 
 onMounted(() => {
   autoStore.fetchAutos();
@@ -13,10 +53,17 @@ onMounted(() => {
 <template>
  
     <!-- Page Header -->
-    <div class="mb-8">
+    <div class="mb-8 flex items-center justify-between">
       <h1 class="text-gray-900 text-2xl md:text-[28px] font-bold leading-9 tracking-tight">
         FAHRZEUGFLOTTE
       </h1>
+      <button
+        class="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+        @click="openModal"
+      >
+        <span class="text-base leading-none">+</span>
+        Neues Auto
+      </button>
     </div>
 
     <!-- Fleet Stats Table Header Card -->
@@ -141,4 +188,12 @@ onMounted(() => {
         </div>
       </div>
     </div>
+
+    <NeuesAuto
+      :open="showModal"
+      :submitting="submitting"
+      :error="formError"
+      @close="closeModal"
+      @submit="submitForm"
+    />
 </template>

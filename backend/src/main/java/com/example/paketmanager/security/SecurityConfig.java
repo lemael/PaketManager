@@ -36,6 +36,11 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/h2-console/**").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/autos/**").permitAll()
+                .requestMatchers("/api/colis/**").permitAll()
+                .requestMatchers("/api/fahrers/**").permitAll()
+                .requestMatchers("/api/kunden/**").permitAll()
+                .requestMatchers("/api/transports/**").permitAll()
                 .anyRequest().authenticated()
             )
             

@@ -51,11 +51,29 @@ export const useFahrerStore = defineStore('fahrer', () => {
     }
   };
 
+  const createFahrer = async (fahrer: Omit<Fahrer, 'id'>) => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const created = await fahrerService.create(fahrer);
+      fahrers.value.push(created);
+      calculateStats();
+      return created;
+    } catch (err: any) {
+      error.value = err.message || 'Fehler beim Erstellen des Fahrers.';
+      console.error('Error creating fahrer:', err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   return {
     stats,
     fahrers,
     loading,
     error,
     fetchFahrer,
+    createFahrer,
   };
 });

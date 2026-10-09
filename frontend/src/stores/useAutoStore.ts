@@ -46,11 +46,29 @@ export const useAutoStore = defineStore('autos', () => {
     }
   };
 
+  const createAuto = async (auto: Omit<Auto, 'id'>) => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const created = await autoService.create(auto);
+      autos.value = [...(autos.value ?? []), created];
+      calculateStats(autos.value);
+      return created;
+    } catch (err: any) {
+      error.value = err.message || 'Fehler beim Erstellen des Fahrzeugs.';
+      console.error('Error creating auto:', err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   return {
     stats,
     autos,
     loading,
     error,
     fetchAutos,
+    createAuto,
   };
 });

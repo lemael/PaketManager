@@ -1,6 +1,7 @@
 package com.example.paketmanager.controller.dashboard;
 
 import com.example.paketmanager.dto.dashboard.AutoDto;
+import com.example.paketmanager.dto.dashboard.DtoMapper;
 import com.example.paketmanager.model.Auto;
 import com.example.paketmanager.service.dashboard.AutoService;
 
@@ -15,9 +16,11 @@ import java.util.List;
 public class AutoController {
 
     private final AutoService autoService;
+    private final DtoMapper dtoMapper;
 
-    public AutoController(AutoService autoService) {
+    public AutoController(AutoService autoService, DtoMapper dtoMapper) {
         this.autoService = autoService;
+        this.dtoMapper = dtoMapper;
     }
 
     @GetMapping
@@ -33,16 +36,17 @@ public class AutoController {
     }
 
     @PostMapping
-    public ResponseEntity<AutoDto> createAuto(@RequestBody Auto auto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(autoService.saveAuto(auto));
+    public ResponseEntity<AutoDto> createAuto(@RequestBody AutoDto autoDto) {
+        AutoDto created = autoService.saveAuto(dtoMapper.toAuto(autoDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<AutoDto> updateAuto(@PathVariable Long id, @RequestBody Auto auto) {
+    public ResponseEntity<AutoDto> updateAuto(@PathVariable Long id, @RequestBody AutoDto autoDto) {
         return autoService.getAutoById(id)
                 .map(existing -> {
-                    auto.setId(id);
-                    return ResponseEntity.ok(autoService.saveAuto(auto));
+                    autoDto.setId(id);
+                    return ResponseEntity.ok(autoService.saveAuto(dtoMapper.toAuto(autoDto)));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }

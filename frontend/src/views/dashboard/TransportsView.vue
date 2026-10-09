@@ -1,9 +1,47 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import TransportStatusBadge from '@/components/transport/TransportStatusBadge.vue';
+import NeuerTransport from '@/components/transport/NeuerTransport.vue';
 import { useTransportStore } from '@/stores/useTransportStore';
+import type { TransportStatus } from '@/services/transport.service';
 
 const transportStore = useTransportStore();
+
+const showModal = ref(false);
+const submitting = ref(false);
+const formError = ref('');
+
+function openModal() {
+  formError.value = '';
+  showModal.value = true;
+}
+
+function closeModal() {
+  showModal.value = false;
+}
+
+async function submitForm(payload: {
+  fahrerId?: number;
+  autoId?: number;
+  zone: string;
+  status: TransportStatus;
+}) {
+  formError.value = '';
+  if (!payload.zone.trim()) {
+    formError.value = 'Bitte eine Zone angeben.';
+    return;
+  }
+
+  submitting.value = true;
+  try {
+    await transportStore.createTransport({ ...payload, colisCount: 0, deliveredCount: 0 });
+    closeModal();
+  } catch {
+    formError.value = 'Transport konnte nicht erstellt werden. Bitte später erneut versuchen.';
+  } finally {
+    submitting.value = false;
+  }
+}
 
 onMounted(() => {
   transportStore.fetchTours();
@@ -13,9 +51,18 @@ onMounted(() => {
 <template>
   
     <!-- Header Title -->
-    <h1 class="text-gray-900 text-2xl md:text-[28px] font-bold leading-9 mb-8">
-      Touren &amp; Transporte
-    </h1>
+    <div class="mb-8 flex items-center justify-between">
+      <h1 class="text-gray-900 text-2xl md:text-[28px] font-bold leading-9">
+        Touren &amp; Transporte
+      </h1>
+      <button
+        class="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+        @click="openModal"
+      >
+        <span class="text-base leading-none">+</span>
+        Neuer Transport
+      </button>
+    </div>
 
     <!-- KPI Summary Grid Container -->
     <div class="bg-white rounded-xl border border-gray-200 overflow-hidden mb-10 shadow-sm">
@@ -129,5 +176,13 @@ onMounted(() => {
         </table>
       </div>
     </div>
+
+    <NeuerTransport
+      :open="showModal"
+      :submitting="submitting"
+      :error="formError"
+      @close="closeModal"
+      @submit="submitForm"
+    />
   
 </template>

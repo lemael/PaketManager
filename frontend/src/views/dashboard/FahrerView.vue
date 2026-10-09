@@ -1,8 +1,46 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import FahrerStatusBadge from '@/components/fahrer/FahrerStatusBadge.vue';
+import NeuerFahrer from '@/components/fahrer/NeuerFahrer.vue';
 import { useFahrerStore } from '@/stores/useFahrerStore';
+import type { FahrerStatus } from '@/services/fahrer.service';
 const fahrerStore = useFahrerStore();
+
+const showModal = ref(false);
+const submitting = ref(false);
+const formError = ref('');
+
+function openModal() {
+  formError.value = '';
+  showModal.value = true;
+}
+
+function closeModal() {
+  showModal.value = false;
+}
+
+async function submitForm(payload: {
+  name: string;
+  phoneNumber: string;
+  licenseClass: string;
+  status: FahrerStatus;
+}) {
+  formError.value = '';
+  if (!payload.name.trim() || !payload.phoneNumber.trim()) {
+    formError.value = 'Bitte Name und Telefonnummer ausfüllen.';
+    return;
+  }
+
+  submitting.value = true;
+  try {
+    await fahrerStore.createFahrer(payload);
+    closeModal();
+  } catch {
+    formError.value = 'Fahrer konnte nicht erstellt werden. Bitte später erneut versuchen.';
+  } finally {
+    submitting.value = false;
+  }
+}
 
 onMounted(() => {
   fahrerStore.fetchFahrer();
@@ -12,9 +50,18 @@ onMounted(() => {
 <template>
  
     <!-- Title -->
-    <h1 class="text-gray-900 text-2xl md:text-[32px] font-bold leading-10 mb-10">
-      Fahrermanagement
-    </h1>
+    <div class="mb-10 flex items-center justify-between">
+      <h1 class="text-gray-900 text-2xl md:text-[32px] font-bold leading-10">
+        Fahrermanagement
+      </h1>
+      <button
+        class="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+        @click="openModal"
+      >
+        <span class="text-base leading-none">+</span>
+        Neuer Fahrer
+      </button>
+    </div>
 
     <!-- KPI Summary Grid Container -->
     <div class="bg-white rounded-xl border border-gray-200 overflow-hidden mb-12 shadow-sm">
@@ -110,5 +157,13 @@ onMounted(() => {
         </div>
       </div>
     </div>
+
+    <NeuerFahrer
+      :open="showModal"
+      :submitting="submitting"
+      :error="formError"
+      @close="closeModal"
+      @submit="submitForm"
+    />
  
 </template>

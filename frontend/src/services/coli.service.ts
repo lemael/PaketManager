@@ -2,12 +2,14 @@ import apiClient from '@/api/axios.instance';
 
 export interface Coli {
   id?: number;
-  sender: string;
+  coliNumber?: string;
   recipient: string;
   formatAndWeight: string;
   status: 'AUSSTEHEND' | 'IN_ARBEIT' | 'GELIEFERT' | 'ANOMALIE';
-  customerId?: number;
+  kundeId?: number;
+  kundeName?: string;
   transportId?: number;
+  transportZone?: string;
 }
 
 export const coliService = {

@@ -1,6 +1,7 @@
 package com.example.paketmanager.controller.dashboard;
 
 import com.example.paketmanager.dto.dashboard.TransportDto;
+import com.example.paketmanager.dto.dashboard.DtoMapper;
 import com.example.paketmanager.model.Transport;
 import com.example.paketmanager.service.dashboard.TransportService;
 
@@ -15,9 +16,11 @@ import java.util.List;
 public class TransportController {
 
     private final TransportService transportService;
+    private final DtoMapper dtoMapper;
 
-    public TransportController(TransportService transportService) {
+    public TransportController(TransportService transportService, DtoMapper dtoMapper) {
         this.transportService = transportService;
+        this.dtoMapper = dtoMapper;
     }
 
     @GetMapping
@@ -33,16 +36,16 @@ public class TransportController {
     }
 
     @PostMapping
-    public ResponseEntity<TransportDto> createTransport(@RequestBody Transport transport) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(transportService.saveTransport(transport));
+    public ResponseEntity<TransportDto> createTransport(@RequestBody TransportDto transportDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(transportService.saveTransport(dtoMapper.toTransport(transportDto)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TransportDto> updateTransport(@PathVariable Long id, @RequestBody Transport transport) {
+    public ResponseEntity<TransportDto> updateTransport(@PathVariable Long id, @RequestBody TransportDto transportDto) {
         return transportService.getTransportById(id)
                 .map(existing -> {
-                    transport.setTransportId(id);
-                    return ResponseEntity.ok(transportService.saveTransport(transport));
+                    transportDto.setId(id);
+                    return ResponseEntity.ok(transportService.saveTransport(dtoMapper.toTransport(transportDto)));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }

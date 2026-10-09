@@ -1,6 +1,7 @@
 package com.example.paketmanager.controller.dashboard;
 
 import com.example.paketmanager.dto.dashboard.KundeDto;
+import com.example.paketmanager.dto.dashboard.DtoMapper;
 import com.example.paketmanager.model.Kunde;
 import com.example.paketmanager.service.dashboard.KundeService;
 
@@ -15,9 +16,11 @@ import java.util.List;
 public class KundeController {
 
     private final KundeService kundeService;
+    private final DtoMapper dtoMapper;
 
-    public KundeController(KundeService kundeService) {
+    public KundeController(KundeService kundeService, DtoMapper dtoMapper) {
         this.kundeService = kundeService;
+        this.dtoMapper = dtoMapper;
     }
 
     @GetMapping
@@ -33,16 +36,16 @@ public class KundeController {
     }
 
     @PostMapping
-    public ResponseEntity<KundeDto> createKunde(@RequestBody Kunde kunde) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(kundeService.saveKunde(kunde));
+    public ResponseEntity<KundeDto> createKunde(@RequestBody KundeDto kundeDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(kundeService.saveKunde(dtoMapper.toKunde(kundeDto)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<KundeDto> updateKunde(@PathVariable Long id, @RequestBody Kunde kunde) {
+    public ResponseEntity<KundeDto> updateKunde(@PathVariable Long id, @RequestBody KundeDto kundeDto) {
         return kundeService.getKundeById(id)
                 .map(existing -> {
-                    kunde.setKundeId(id);
-                    return ResponseEntity.ok(kundeService.saveKunde(kunde));
+                    kundeDto.setId(id);
+                    return ResponseEntity.ok(kundeService.saveKunde(dtoMapper.toKunde(kundeDto)));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }

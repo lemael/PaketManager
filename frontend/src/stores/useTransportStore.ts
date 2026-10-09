@@ -51,6 +51,23 @@ export const useTransportStore = defineStore('transports', () => {
     }
   };
 
+  const createTransport = async (transport: Omit<Transport, 'id'>) => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const created = await transportService.create(transport as Transport);
+      tours.value.push(created);
+      calculateStats();
+      return created;
+    } catch (err: any) {
+      error.value = err.message || 'Fehler beim Erstellen des Transports.';
+      console.error('Error creating transport:', err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
 
 
   return {
@@ -59,5 +76,6 @@ export const useTransportStore = defineStore('transports', () => {
     loading,
     error,
     fetchTours,
+    createTransport,
   };
 });

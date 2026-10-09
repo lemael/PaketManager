@@ -1,6 +1,7 @@
 package com.example.paketmanager.controller.dashboard;
 
 import com.example.paketmanager.dto.dashboard.FahrerDto;
+import com.example.paketmanager.dto.dashboard.DtoMapper;
 import com.example.paketmanager.model.Fahrer;
 import com.example.paketmanager.service.dashboard.FahrerService;
 
@@ -15,9 +16,11 @@ import java.util.List;
 public class FahrerController {
 
     private final FahrerService fahrerService;
+    private final DtoMapper dtoMapper;
 
-    public FahrerController(FahrerService fahrerService) {
+    public FahrerController(FahrerService fahrerService, DtoMapper dtoMapper) {
         this.fahrerService = fahrerService;
+        this.dtoMapper = dtoMapper;
     }
 
     @GetMapping
@@ -33,16 +36,16 @@ public class FahrerController {
     }
 
     @PostMapping
-    public ResponseEntity<FahrerDto> createFahrer(@RequestBody Fahrer fahrer) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(fahrerService.saveFahrer(fahrer));
+    public ResponseEntity<FahrerDto> createFahrer(@RequestBody FahrerDto fahrerDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(fahrerService.saveFahrer(dtoMapper.toFahrer(fahrerDto)));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<FahrerDto> updateFahrer(@PathVariable Long id, @RequestBody Fahrer fahrer) {
+    public ResponseEntity<FahrerDto> updateFahrer(@PathVariable Long id, @RequestBody FahrerDto fahrerDto) {
         return fahrerService.getFahrerById(id)
                 .map(existing -> {
-                    fahrer.setFahrerId(id);
-                    return ResponseEntity.ok(fahrerService.saveFahrer(fahrer));
+                    fahrerDto.setId(id);
+                    return ResponseEntity.ok(fahrerService.saveFahrer(dtoMapper.toFahrer(fahrerDto)));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }

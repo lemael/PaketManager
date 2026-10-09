@@ -1,10 +1,48 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import AppLayout from '@/layouts/AppLayout.vue';
+import { onMounted, ref } from 'vue';
 import KundenBadge from '@/components/kunden/KundenBadge.vue';
+import NeuerKunde from '@/components/kunden/NeuerKunde.vue';
 import { useKundeStore } from '@/stores/useKundeStore';
+import type { ContractType } from '@/services/kunde.service';
 
 const kundeStore = useKundeStore();
+
+const showModal = ref(false);
+const submitting = ref(false);
+const formError = ref('');
+
+function openModal() {
+  formError.value = '';
+  showModal.value = true;
+}
+
+function closeModal() {
+  showModal.value = false;
+}
+
+async function submitForm(payload: {
+  name: string;
+  mainContact: string;
+  city: string;
+  contract: ContractType;
+  monthlyVolume: string;
+}) {
+  formError.value = '';
+  if (!payload.name.trim() || !payload.mainContact.trim() || !payload.city.trim()) {
+    formError.value = 'Bitte alle Pflichtfelder ausfüllen.';
+    return;
+  }
+
+  submitting.value = true;
+  try {
+    await kundeStore.createKunde(payload);
+    closeModal();
+  } catch {
+    formError.value = 'Kunde konnte nicht erstellt werden. Bitte später erneut versuchen.';
+  } finally {
+    submitting.value = false;
+  }
+}
 
 onMounted(() => {
   kundeStore.fetchKunden();
@@ -14,10 +52,17 @@ onMounted(() => {
 <template>
   
     <!-- Page Title -->
-    <div class="mb-8">
+    <div class="mb-8 flex items-center justify-between">
       <h1 class="text-gray-900 text-2xl md:text-[32px] font-bold leading-10 tracking-tight">
         Kundenverzeichnis
       </h1>
+      <button
+        class="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-800 transition-colors"
+        @click="openModal"
+      >
+        <span class="text-base leading-none">+</span>
+        Neuer Kunde
+      </button>
     </div>
 
     <!-- Summary Metrics Card -->
@@ -121,5 +166,13 @@ onMounted(() => {
         </div>
       </div>
     </div>
+
+    <NeuerKunde
+      :open="showModal"
+      :submitting="submitting"
+      :error="formError"
+      @close="closeModal"
+      @submit="submitForm"
+    />
   
 </template>
